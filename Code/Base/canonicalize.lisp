@@ -74,7 +74,7 @@
 (defmethod canonicalize-declaration-specifier
     (client type-specifier declaration-specifier)
   (canonicalize-declaration-specifier
-   'type (cons (cook 'type) declaration-specifier)))
+   client 'type (cons (cook 'type) declaration-specifier)))
 
 ;;; Given a PREFIX P and a list of ITEMS, say (I1 I2 ... In), return a
 ;;; list of the items prefixed with P, i.e. ((P I1) (P I2) ... (P
@@ -96,5 +96,39 @@
                         declaration-specifier)
                      (map-prefix (first declaration-specifier)
                                  (rest  declaration-specifier)))))
+
+(defun canonicalize-type-and-ftype (declaration-specifier)
+  (loop with declaration-identifier = (first declaration-specifier)
+        with type-specifier = (first (rest declaration-specifier))
+        with targets = (rest (rest declaration-specifier))
+        for remaining = targets then (rest remaining)
+        until (null remaining)
+        collect (cons declaration-identifier
+                      (cons type-specifier
+                            (cons (first remaining)
+                                  nil)))))
+
+(defmethod canonicalize-declaration-specifier
+    (client (declaration-identifier (eql 'type)) declaration-specifier)
+  (canonicalize-type-and-ftype declaration-specifier))
+
+(defmethod canonicalize-declaration-specifier
+    (client (declaration-identifier (eql 'ftype)) declaration-specifier)
+  (canonicalize-type-and-ftype declaration-specifier))
+
+(defun canonicalize-declaration-specifiers
+    (client declaration-specifiers)
+  (loop with *client* = client
+        with ignored-declaration-identifiers
+          = (ignored-declaration-identifiers client)
+        for remaining = declaration-specifiers then (rest remaining)
+        until (null remaining)
+        append
+        (let* ((declaration-specifier (first remaining))
+               (declaration-identifier (raw (first declaration-specifier))))
+          (if (member declaration-identifier ignored-declaration-identifiers)
+              '()
+              (canonicalize-declaration-specifier
+               client declaration-identifier declaration-specifier)))))
 
 ; LocalWords:  canonicalize canonicalization canonicalized
