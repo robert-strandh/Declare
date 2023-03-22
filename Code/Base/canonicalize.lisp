@@ -72,9 +72,9 @@
 ;;; client-specific methods on this generic functions.  So we are left
 ;;; with only type specifiers.
 (defmethod canonicalize-declaration-specifier
-    (client type-specifier targets)
+    (client type-specifier declaration-specifier)
   (canonicalize-declaration-specifier
-   'type (cons type-specifier targets)))
+   'type (cons (cook 'type) declaration-specifier)))
 
 ;;; Given a PREFIX P and a list of ITEMS, say (I1 I2 ... In), return a
 ;;; list of the items prefixed with P, i.e. ((P I1) (P I2) ... (P
@@ -83,6 +83,18 @@
 (defun map-prefix (prefix items)
   (loop for remaining = items then (rest remaining)
         until (null remaining)
-        collect (list prefix (first remaining))))
+        collect (cons prefix (cons (first remaining) nil))))
+
+(progn
+  .
+  #.(loop for declaration-identifier in
+          '(declaration dynamic-extent ignore ignorable
+            inline notinline optimize special)
+          collect `(defmethod canonicalize-declaration-specifier
+                       (client
+                        (declaration-identifier (eql ',declaration-identifier))
+                        declaration-specifier)
+                     (map-prefix (first declaration-specifier)
+                                 (rest  declaration-specifier)))))
 
 ; LocalWords:  canonicalize canonicalization canonicalized
