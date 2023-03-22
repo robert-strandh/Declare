@@ -42,7 +42,10 @@
     :reader nil-object)
    (%raw-function
     :initform #'cl:identity
-    :reader raw-function)))
+    :reader raw-function)
+   (%cook-function
+    :initform #'cl:identity
+    :reader cook-function)))
 
 (defvar *client*)
 
@@ -65,3 +68,6 @@
 
 (defun raw (expression)
   (funcall (raw-function *client*) expression))
+
+(defun cook (expression)
+  (funcall (cook-function *client*) expression))
