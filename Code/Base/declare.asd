@@ -4,5 +4,6 @@
   :serial t
   :components
   ((:file "packages")
+   (:file "generic-functions")
    (:file "client")
    (:file "canonicalize")))
