@@ -5,5 +5,6 @@
   (:shadow #:first #:rest #:null #:atom #:cons #:nil)
   (:export
    #:canonicalize-declaration-specifier
-   #:canonicalize-declaration
-   #:s-expression-client))
+   #:canonicalize-declaration-specifiers
+   #:s-expression-client
+   #:ignored-declaration-identifiers))
