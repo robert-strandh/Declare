@@ -29,3 +29,14 @@
 ;;; specifier.
 (defgeneric canonicalize-declaration-specifier
     (client declaration-identifier declaration-specifier))
+
+;;; This :AROUND method makes sure that the special variable *CLIENT*
+;;; is bound to the client object passed as an argument to
+;;; CANONICALIZE-DECLARATION-SPECIFIER, so that primary methods can
+;;; use the functions FIRST, REST, etc.
+(defmethod canonicalize-declaration-specifier :around
+    (client declaration-identifier declaration-specifier)
+  (let ((*client* client))
+    (call-next-method)))
+
+
