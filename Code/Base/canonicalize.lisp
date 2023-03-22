@@ -65,9 +65,24 @@
 ;;;; that is an abbreviation for a type declaration is canonicalized
 ;;;; as an explicit TYPE declaration specifier.
 
+;;; This default method is called only when the second argument is
+;;; known to be a type specifier.  Declaration identifiers that should
+;;; be ignored have been eliminated when this function is called, and
+;;; client-specific declaration identifiers must be handled by
+;;; client-specific methods on this generic functions.  So we are left
+;;; with only type specifiers.
 (defmethod canonicalize-declaration-specifier
     (client type-specifier targets)
   (canonicalize-declaration-specifier
    'type (cons type-specifier targets)))
+
+;;; Given a PREFIX P and a list of ITEMS, say (I1 I2 ... In), return a
+;;; list of the items prefixed with P, i.e. ((P I1) (P I2) ... (P
+;;; In)).  The twist is that the list of items is represented in the
+;;; form of a concrete syntax tree.
+(defun map-prefix (prefix items)
+  (loop for remaining = items then (rest remaining)
+        until (null remaining)
+        collect (list prefix (first remaining))))
 
 ; LocalWords:  canonicalize canonicalization canonicalized
