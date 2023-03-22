@@ -65,5 +65,9 @@
 ;;;; that is an abbreviation for a type declaration is canonicalized
 ;;;; as an explicit TYPE declaration specifier.
 
+(defmethod canonicalize-declaration-specifier
+    (client type-specifier targets)
+  (canonicalize-declaration-specifier
+   'type (cons type-specifier targets)))
 
 ; LocalWords:  canonicalize canonicalization canonicalized
